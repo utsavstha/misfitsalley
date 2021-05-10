@@ -1,0 +1,72 @@
+{% extends 'main.html' %}
+{% block content %}
+{% include 'nav.html' %}
+<div class="container-fluid mt-100">
+
+    <div class="card mb-3">
+        <div class="card-header pl-0 pr-0">
+            <div class="row no-gutters w-100 align-items-center">
+                <div class="col ml-3">Topics</div>
+                <div class="col-5 text-muted">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col-3 ">Category</div>
+                        <div class="col-3 text-center">Replies</div>
+                        <div class="col-2 text-center">Likes</div>
+                        <div class="col-3 text-center">Dislikes</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% for post in posts %}
+        <hr class="m-0">
+        <div class="card-body py-3">
+            <div class="row no-gutters align-items-center">
+                <div class="col"> <a href="{% url 'view_post' post.id %}" class="text-big"
+                        data-abc="true">{{post.title}}</a>
+                    <div class="text-muted small mt-1">{{post.createdAt}} &nbsp;·&nbsp; <a href="javascript:void(0)"
+                            class="text-muted" data-abc="true">{{post.user.username}}</a></div>
+                    {% for tag in post.tags.all %}
+                    <span class="badge badge-success align-text-bottom mr-1 mt-2">{{tag.name}}</span>
+                    {% endfor %}
+                </div>
+                <div class="d-none d-md-block col-5">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col-4"><span class="dot mr-1"></span>{{post.category}}</div>
+
+                        <div class="col-2 text-center"><a href="#"
+                                class="d-none d-sm-inline-block btn btn-sm btn-success shadow-sm ">
+                                {{post.comments}}</i></a></div>
+                        <div class="col-3 text-center"><a href="#"
+                                class="d-none d-sm-inline-block btn btn-sm btn-success shadow-sm ">
+                                {{post.likes}}</i></a></div>
+                        <div class="col-2 text-center"><a href="#"
+                                class="d-none d-sm-inline-block btn btn-sm btn-danger shadow-sm ">
+                                {{post.dislikes}}</i></a></div>
+
+                        <!-- <div class="media col-8 align-items-center"> <img
+                                src="https://res.cloudinary.com/dxfq3iotg/image/upload/v1574583319/AAA/3.jpg" alt=""
+                                class="d-block ui-w-30 rounded-circle">
+                            <div class="media-body flex-truncate ml-2">
+                                <div class="line-height-1 text-truncate">1 day ago</div> <a href="javascript:void(0)"
+                                    class="text-muted small text-truncate" data-abc="true">by Steve smith</a>
+                            </div>
+                        </div> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+
+    </div>
+    <nav>
+        <ul class="pagination mb-5">
+            <li class="page-item disabled"><a class="page-link" href="javascript:void(0)" data-abc="true">«</a></li>
+            <li class="page-item active"><a class="page-link" href="javascript:void(0)" data-abc="true">1</a></li>
+            <li class="page-item"><a class="page-link" href="javascript:void(0)" data-abc="true">2</a></li>
+            <li class="page-item"><a class="page-link" href="javascript:void(0)" data-abc="true">3</a></li>
+            <li class="page-item"><a class="page-link" href="javascript:void(0)" data-abc="true">»</a></li>
+        </ul>
+    </nav>
+</div>
+{% endblock %}

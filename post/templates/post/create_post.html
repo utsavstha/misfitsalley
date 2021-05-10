@@ -1,0 +1,60 @@
+{% extends 'main.html' %}
+{% block content %}
+{% include 'nav.html' %}
+
+<div class="container mt-100">
+    <form id="contact-form" method="POST" action="{% url 'create_post' %}" role="form">
+        {% csrf_token %}
+        <div class="messages"></div>
+
+        <div class="controls">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="form_email">Title</label>
+                        <input id="form_email" type="text" name="title" class="form-control"
+                            placeholder="Please enter your Title" required="required"
+                            data-error="Valid email is required.">
+                        <div class="help-block with-errors"></div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="form_need">Category</label>
+                        <select id="form_need" name="category" class="form-control" required="required"
+                            data-error="Please specify your need.">
+                            {% for category in categories %}
+                            <option value="{{category.id}}">{{category.name}}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="help-block with-errors"></div>
+                    </div>
+                </div>
+            </div>
+            <div> <select name="tags" id="choices-multiple-remove-button" placeholder="Select upto 5 tags" multiple>
+                    {% for tag in tags %}
+                    <option value="{{tag.id}}">{{tag.name}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="form_message">Content</label>
+                        <textarea id="form_message" name="content" class="form-control" placeholder="Message for me *"
+                            rows="4" required="required" data-error="Please, leave us a message."></textarea>
+                        <div class="help-block with-errors"></div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <input type="submit" class="btn btn-primary btn-send" value="POST NOW">
+                </div>
+            </div>
+
+        </div>
+
+    </form>
+</div>
+
+{% endblock %}
