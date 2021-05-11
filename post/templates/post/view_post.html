@@ -9,7 +9,7 @@
                 <div class="col">
                     <div class="d-flex justify-content-between">
                         <a class="text-big" data-abc="true">{{post.title}}</a>
-                        <a class="text-muted" data-abc="true"><i class="far fa-clock mr-1"></i>{{post.createdAt}}</a>
+                        <a class="text-muted" data-abc="true"><i class="far fa-clock mr-1"></i>{{post.get_date}}</a>
 
                     </div>
 
@@ -92,13 +92,13 @@
                                 {% for comment in comments %}
                                 <div class="mt-2">
                                     <div class="d-flex flex-row p-3"> <img
-                                            src="https://www.gravatar.com/avatar/{{comment.user.email}}?d=identicon"
+                                            src="https://www.gravatar.com/avatar/{{comment.get_hash}}?d=identicon"
                                             width="40" height="40" class="rounded-circle mr-3">
                                         <div class="w-100">
                                             <div class="d-flex justify-content-between align-items-center">
                                                 <div class="d-flex flex-row align-items-center"> <span
                                                         class="mr-2">{{comment.user.username}}</span> </div>
-                                                <small>{{comment.createdAt}}</small>
+                                                <small>{{comment.get_date}}</small>
                                             </div>
                                             <p class="text-justify comment-text mb-0">{{comment.content}}</p>
                                             <div class="d-flex flex-row user-feed"> <span class="wish"><i

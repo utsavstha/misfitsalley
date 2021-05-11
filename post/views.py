@@ -4,19 +4,20 @@ import hashlib
 from django.db.models import F
 
 
-def posts(request):
-    query = '''
+def posts(request, limit=20, offset=0):
+    query = f'''
             SELECT core_posts.id, core_posts.title, core_posts.content, 
             core_posts.createdAt, core_posts.flags, auth_user.username, 
             core_category.name, 
             (SELECT COUNT(core_comment.id) FROM core_comment WHERE core_comment.post_id = core_posts.id) as comments,  
             (SELECT COUNT(core_likes.id) FROM core_likes WHERE core_likes.post_id = core_posts.id) as likes,  
             (SELECT COUNT(core_dislikes.id) FROM core_dislikes WHERE core_dislikes.post_id = core_posts.id) as dislikes 
-            FROM core_posts 
+            FROM core_posts
             JOIN core_category ON core_posts.category_id = core_category.id 
             JOIN auth_user ON core_posts.user_id = auth_user.id 
-            '''
+            ORDER BY core_posts.createdAt DESC'''
     posts = Posts.objects.raw(query)
+    notifications = Notification.objects.all()
     user = None
     imagehash = None
     if request.user != "AnonymousUser":
@@ -24,7 +25,7 @@ def posts(request):
         imagehash = hashlib.md5((user.username).encode('utf-8'))
     print(posts[0])
     context = {'posts': posts, 'user': user,
-               'imagehash': imagehash.hexdigest()}
+               'imagehash': imagehash.hexdigest(), 'notifications': notifications}
     return render(request, 'post/posts.html', context)
 
 
@@ -33,6 +34,7 @@ def viewPost(request, pk):
     likes = post.likes_set.all()
     dislikes = post.dislikes_set.all()
     comments = post.comment_set.all()
+    notifications = Notification.objects.all()
     user = None
     imagehash = None
     if request.user != "AnonymousUser":
@@ -41,12 +43,13 @@ def viewPost(request, pk):
         imagehash = hashlib.md5((user.username).encode('utf-8'))
 
     context = {'post': post, 'comments': comments,
-               'imagehash': imagehash.hexdigest(), 'likes': len(likes), 'dislikes': len(dislikes)}
+               'imagehash': imagehash.hexdigest(), 'likes': len(likes), 'dislikes': len(dislikes), 'notifications': notifications}
     return render(request, 'post/view_post.html', context)
 
 
 def createPost(request):
     categories = Category.objects.all()
+    notifications = Notification.objects.all()
     tags = Tags.objects.all()
     if request.method == "POST":
         title = request.POST.get('title')
@@ -59,7 +62,8 @@ def createPost(request):
         for tag in formTags:
             post.tags.add(Tags.objects.get(id=tag))
         return redirect('posts')
-    context = {'categories': categories, 'tags': tags}
+    context = {'categories': categories,
+               'tags': tags, 'notifications': notifications}
     return render(request, 'post/create_post.html', context)
 
 
@@ -70,6 +74,10 @@ def postComment(request, pk):
     comment = Comment(user=request.user, post=post,
                       content=content, likes=0, dislikes=0, flags=0)
     comment.save()
+    if request.user != post.user:
+        notification = Notification(
+            user=request.user, post=post, content="has commented on your post")
+        notification.save()
     return redirect('view_post', pk=pk)
 
 
@@ -81,6 +89,10 @@ def postLike(request, pk):
     else:
         newLike = Likes(user=request.user, post=post)
         newLike.save()
+        if request.user != post.user:
+            notification = Notification(
+                user=request.user, post=post, content="has liked your post")
+            notification.save()
         return redirect('view_post', pk=pk)
 
 
@@ -92,4 +104,8 @@ def postDisLike(request, pk):
     else:
         newDislike = Dislikes(user=request.user, post=post)
         newDislike.save()
+        if request.user != post.user:
+            notification = Notification(
+                user=request.user, post=post, content="has disliked your post")
+            notification.save()
         return redirect('view_post', pk=pk)
